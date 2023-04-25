@@ -45,8 +45,36 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(
-  cors()
+  cors({
+    origin: [
+      "http://localhost:4000",
+      "http://localhost:8080",
+      "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
+      "https://roaring-centaur-5c9228.netlify.app/login",
+    ],
+    credentials: true,
+    methods: "GET,POST,PUT,DELETE,PATCH",
+    allowedHeaders: ["Content-type", "Access", "Authorization"],
+    exposedHeaders: ["Access-Control-Allow-Origin"], // Add this line to expose the Access-Control-Allow-Origin header
+  })
 );
+
+// app.use(cors({
+//   origin: '*',
+//   credentials: true,
+//   methods: 'GET,POST,PUT,DELETE,PATCH',
+//   allowedHeaders: ['Content-type', 'Access', 'Authorization'],
+// }));
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  next();
+});
 
 // app.use("/auth", authRouter);
 app.use("/", userRouter);
@@ -60,15 +88,21 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = new Server(server, {
   cors: {
-    // origin: [
-    //   "http://localhost:4000",
-    //   "http://localhost:8080",
-    //   "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
-    //   "https://roaring-centaur-5c9228.netlify.app/login",
-    // ],
-    // methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
-    // credentials: true,
-    // allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin : *"],
+    origin: [
+      "http://localhost:4000",
+      "http://localhost:8080",
+      "http://vutumi-react.s3-website.ap-south-1.amazonaws.com",
+      "https://roaring-centaur-5c9228.netlify.app",
+    ],
+    methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+    ],
   },
 });
 
