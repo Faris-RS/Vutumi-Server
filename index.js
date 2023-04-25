@@ -11,7 +11,7 @@ import fileUpload from "express-fileupload";
 import { Server } from "socket.io";
 import { v4 as uuidv4 } from "uuid";
 
-import authRouter from "./routes/auth.js";
+// import authRouter from "./routes/auth.js";
 import connection from "./config/dbConnection.js";
 import userRouter from "./routes/user.js";
 import postRouter from "./routes/post.js";
@@ -55,16 +55,17 @@ app.use(
     // },
     origin: [
       "http://localhost:4000",
+      "http://localhost:8080",
       "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
       "https://roaring-centaur-5c9228.netlify.app/login",
     ],
     credentials: true,
     methods: "GET,POST,PUT,DELETE,PATCH",
-    allowedHeaders: ["Content-type", "Access", "Authorization"],
+    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization"],
   })
 );
 
-app.use("/auth", authRouter);
+// app.use("/auth", authRouter);
 app.use("/", userRouter);
 app.use("/post", postRouter);
 app.use("/admin", adminRouter);
@@ -78,12 +79,13 @@ const io = new Server(server, {
   cors: {
     origin: [
       "http://localhost:4000",
+      "http://localhost:8080",
       "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
       "https://roaring-centaur-5c9228.netlify.app/login",
     ],
     methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Access", "Authorization"],
+    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization"],
   },
 });
 
