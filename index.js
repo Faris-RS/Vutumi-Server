@@ -56,14 +56,11 @@ app.use(
     origin: [
       "http://localhost:4000",
       "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
+      "https://roaring-centaur-5c9228.netlify.app/login",
     ],
     credentials: true,
     methods: "GET,POST,PUT,DELETE,PATCH",
-    allowedHeaders:[
-      'Content-type',
-      'Access',
-      'Authorization'
-  ]
+    allowedHeaders: ["Content-type", "Access", "Authorization"],
   })
 );
 
@@ -82,8 +79,11 @@ const io = new Server(server, {
     origin: [
       "http://localhost:4000",
       "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
+      "https://roaring-centaur-5c9228.netlify.app/login",
     ],
+    methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Access", "Authorization"],
   },
 });
 
