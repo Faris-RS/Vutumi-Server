@@ -44,21 +44,7 @@ app.use(fileUpload());
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(
-  cors({
-    // origin: [
-    //   "http://localhost:4000",
-    //   "http://localhost:8080",
-    //   "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
-    //   "https://roaring-centaur-5c9228.netlify.app/login",
-    // ],
-    origin: "https://roaring-centaur-5c9228.netlify.app/",
-    credentials: true,
-    methods: "GET,POST,PUT,DELETE,PATCH",
-    allowedHeaders: ["Content-type", "Access", "Authorization"],
-    exposedHeaders: ["Access-Control-Allow-Origin"], // Add this line to expose the Access-Control-Allow-Origin header
-  })
-);
+app.use(cors());
 
 // app.use(cors({
 //   origin: '*',
