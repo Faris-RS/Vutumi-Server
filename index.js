@@ -46,12 +46,13 @@ app.use(passport.session());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:4000",
-      "http://localhost:8080",
-      "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
-      "https://roaring-centaur-5c9228.netlify.app/login",
-    ],
+    // origin: [
+    //   "http://localhost:4000",
+    //   "http://localhost:8080",
+    //   "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
+    //   "https://roaring-centaur-5c9228.netlify.app/login",
+    // ],
+    origin: "https://roaring-centaur-5c9228.netlify.app/login",
     credentials: true,
     methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: ["Content-type", "Access", "Authorization"],
@@ -88,12 +89,13 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:4000",
-      "http://localhost:8080",
-      "http://vutumi-react.s3-website.ap-south-1.amazonaws.com",
-      "https://roaring-centaur-5c9228.netlify.app",
-    ],
+    // origin: [
+    //   "http://localhost:4000",
+    //   "http://localhost:8080",
+    //   "http://vutumi-react.s3-website.ap-south-1.amazonaws.com",
+    //   "https://roaring-centaur-5c9228.netlify.app",
+    // ],
+    origin: "https://roaring-centaur-5c9228.netlify.app",
     methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     credentials: true,
     allowedHeaders: [
