@@ -52,7 +52,7 @@ app.use(
     //   "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
     //   "https://roaring-centaur-5c9228.netlify.app/login",
     // ],
-    origin: "https://roaring-centaur-5c9228.netlify.app/login",
+    origin: "https://roaring-centaur-5c9228.netlify.app/",
     credentials: true,
     methods: "GET,POST,PUT,DELETE,PATCH",
     allowedHeaders: ["Content-type", "Access", "Authorization"],
