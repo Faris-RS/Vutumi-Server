@@ -61,7 +61,7 @@ app.use(
     ],
     credentials: true,
     methods: "GET,POST,PUT,DELETE,PATCH",
-    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization"],
+    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin : *"],
   })
 );
 
@@ -85,7 +85,7 @@ const io = new Server(server, {
     ],
     methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
     credentials: true,
-    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization"],
+    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin : *"],
   },
 });
 
