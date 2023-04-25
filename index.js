@@ -45,24 +45,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(
-  cors({
-    // origin: function(origin, callback) {
-    //   if (origin === 'http://localhost:8080' || origin === 'http://localhost:4000') {
-    //     callback(null, true);
-    //   } else {
-    //     callback(new Error('Not allowed by CORS'));
-    //   }
-    // },
-    origin: [
-      "http://localhost:4000",
-      "http://localhost:8080",
-      "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
-      "https://roaring-centaur-5c9228.netlify.app/login",
-    ],
-    credentials: true,
-    methods: "GET,POST,PUT,DELETE,PATCH",
-    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin : *"],
-  })
+  cors()
 );
 
 // app.use("/auth", authRouter);
@@ -77,15 +60,15 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:4000",
-      "http://localhost:8080",
-      "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
-      "https://roaring-centaur-5c9228.netlify.app/login",
-    ],
-    methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-    allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin : *"],
+    // origin: [
+    //   "http://localhost:4000",
+    //   "http://localhost:8080",
+    //   "http://http://vutumi-react.s3-website.ap-south-1.amazonaws.com/",
+    //   "https://roaring-centaur-5c9228.netlify.app/login",
+    // ],
+    // methods: ["POST", "GET", "PUT", "DELETE", "PATCH"],
+    // credentials: true,
+    // allowedHeaders: [ "Origin, X-Requested-With, Content-Type, Accept, Authorization, Access-Control-Allow-Origin : *"],
   },
 });
 
