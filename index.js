@@ -21,7 +21,11 @@ import userModel from "./models/userModel.js";
 
 const app = express();
 dotenv.config();
-connection();
+try {
+  connection();
+} catch (err) {
+  console.error(err);
+}
 
 app.use(
   cookieSession({

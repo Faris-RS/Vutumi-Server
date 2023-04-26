@@ -54,60 +54,68 @@ export const signIn = async (req, res) => {
 
 // Sent OTP Through otp helper
 export const sendOtp = async (req, res) => {
-  if (
-    req.body?.email &&
-    req.body?.phone &&
-    req.body?.firstName &&
-    req.body?.lastName &&
-    req.body?.dob
-  ) {
-    const userDate = parseISO(req.body.dob);
-    const now = new Date();
-    const age = differenceInYears(now, userDate);
-    if (age >= 21) {
-      const user = req.body;
-      sendOtpHelper(user).then((response) => {
-        res.status(200).json(response);
-      });
+  try {
+    if (
+      req.body?.email &&
+      req.body?.phone &&
+      req.body?.firstName &&
+      req.body?.lastName &&
+      req.body?.dob
+    ) {
+      const userDate = parseISO(req.body.dob);
+      const now = new Date();
+      const age = differenceInYears(now, userDate);
+      if (age >= 21) {
+        const user = req.body;
+        sendOtpHelper(user).then((response) => {
+          res.status(200).json(response);
+        });
+      }
     }
-  } else {
-    console.error("please fill the whole form");
+  } catch (err) {
+    console.error(err);
   }
 };
 
 // Resend OTP
 export const resendOtp = async (req, res) => {
-  const response = {};
-  const email = req.body;
-  await otpGenerator().then((otp) => {
-    sendMail(email, otp).then((result) => {
-      if (result.otpSent) {
-        response.otpSent = true;
-        response.status = true;
-        otpVerify = otp;
-        res.status(200).json(response);
-      } else {
-        response.otpSent = false;
-        response.status = false;
-        res.status(200).json(response);
-      }
+  try {
+    const response = {};
+    const email = req.body;
+    await otpGenerator().then((otp) => {
+      sendMail(email, otp).then((result) => {
+        if (result.otpSent) {
+          response.otpSent = true;
+          response.status = true;
+          otpVerify = otp;
+          res.status(200).json(response);
+        } else {
+          response.otpSent = false;
+          response.status = false;
+          res.status(200).json(response);
+        }
+      });
     });
-  });
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 // Check Oauth
 export const checkOauth = async (req, res) => {
-  const response = {};
-  const mail = req.body.userData.oauthMail;
-  const user = await userModel.findOne({ email: mail });
-  if (!user) {
-    // User does not exist, so redirect them to register page
-    response.status = false;
-  } else {
-    response.status = true;
-    // res.status(304).json(response);
+  try {
+    const response = {};
+    const mail = req.body.userData.oauthMail;
+    const user = await userModel.findOne({ email: mail });
+    if (!user) {
+      response.status = false;
+    } else {
+      response.status = true;
+    }
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
   }
-  res.status(200).json(response);
 };
 
 // Signup by verifying the OTP
@@ -146,30 +154,34 @@ export const verifyOtpAndSignUp = async (req, res) => {
 
 // Add Oauth user
 export const addUser = async (req, res) => {
-  const response = {};
-  if (
-    req.body?.oauthMails &&
-    req.body?.phone &&
-    req.body?.firstName &&
-    req.body?.lastName &&
-    req.body?.dob
-  ) {
-    const newUser = new userModel({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      phone: req.body.phone,
-      email: req.body.oauthMails,
-      dateOfBirth: req.body.dob,
-      type: req.body.type,
-      password: req.body.type,
-    });
-    await newUser.save().then(() => {
-      response.status = true;
+  try {
+    const response = {};
+    if (
+      req.body?.oauthMails &&
+      req.body?.phone &&
+      req.body?.firstName &&
+      req.body?.lastName &&
+      req.body?.dob
+    ) {
+      const newUser = new userModel({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        phone: req.body.phone,
+        email: req.body.oauthMails,
+        dateOfBirth: req.body.dob,
+        type: req.body.type,
+        password: req.body.type,
+      });
+      await newUser.save().then(() => {
+        response.status = true;
+        res.status(200).json(response);
+      });
+    } else {
+      response.status = false;
       res.status(200).json(response);
-    });
-  } else {
-    response.status = false;
-    res.status(200).json(response);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 

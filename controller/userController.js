@@ -3,17 +3,17 @@ import jwt from "jsonwebtoken";
 import cloudinary from "../utils/cloudinary.js";
 
 export const getDetails = async (req, res) => {
-  if (req.body?.token) {
-    try {
+  try {
+    if (req.body?.token) {
       const response = {
         data: await userModel.findOne({
           _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
         }),
       };
       res.status(200).json(response);
-    } catch (error) {
-      console.error(error);
     }
+  } catch (err) {
+    console.error(err);
   }
 };
 
@@ -60,125 +60,144 @@ export const editProfile = async (req, res) => {
 };
 
 export const addContact = async (req, res) => {
-  const response = {};
-  const userId = jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId;
-  const user = await userModel.findOne({ _id: req.params.id });
+  try {
+    const userId = jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId;
+    const user = await userModel.findOne({ _id: req.params.id });
 
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-  if (user.requests.includes(userId)) {
-    await userModel.findOneAndUpdate(
-      { _id: req.params.id },
-      { $pull: { requests: userId } }
-    );
-    res.status(200).json({ request: false });
-  } else {
-    await userModel.findOneAndUpdate(
-      { _id: req.params.id },
-      { $addToSet: { requests: userId } }
-    );
-    res.status(200).json({ request: true });
+    if (user.requests.includes(userId)) {
+      await userModel.findOneAndUpdate(
+        { _id: req.params.id },
+        { $pull: { requests: userId } }
+      );
+      res.status(200).json({ request: false });
+    } else {
+      await userModel.findOneAndUpdate(
+        { _id: req.params.id },
+        { $addToSet: { requests: userId } }
+      );
+      res.status(200).json({ request: true });
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
 export const checkRequests = async (req, res) => {
-  const user = await userModel.findOne({
-    _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
-  });
-  const requests = user.requests;
-  const requestedUser = [];
-  for (let i = 0; i < user.requests.length; i++) {
-    const userQuery = userModel.findOne({ _id: requests[i] });
-    const user = await userQuery.exec();
-    requestedUser.push(user);
+  try {
+    const user = await userModel.findOne({
+      _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
+    });
+    const requests = user.requests;
+    const requestedUser = [];
+    for (let i = 0; i < user.requests.length; i++) {
+      const userQuery = userModel.findOne({ _id: requests[i] });
+      const user = await userQuery.exec();
+      requestedUser.push(user);
+    }
+    const response = {
+      data: requestedUser,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
   }
-  const response = {
-    data: requestedUser,
-  };
-  res.status(200).json(response);
 };
 
 export const acceptRequest = async (req, res) => {
-  const user = await userModel.findOne({
-    _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
-  });
-  if (user.requests.includes(req.params.id)) {
-    user.contacts.addToSet(req.params.id);
-    user.requests = user.requests.filter((id) => id !== req.params.id);
-    await user.save();
-    const response = {
-      status: true,
-    };
-    res.status(200).json(response);
+  try {
+    const user = await userModel.findOne({
+      _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
+    });
+    if (user.requests.includes(req.params.id)) {
+      user.contacts.addToSet(req.params.id);
+      user.requests = user.requests.filter((id) => id !== req.params.id);
+      await user.save();
+      const response = {
+        status: true,
+      };
+      res.status(200).json(response);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
 export const declineRequest = async (req, res) => {
-  const user = await userModel.findOne({
-    _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
-  });
-  if (user.requests.includes(req.params.id)) {
-    user.requests = user.requests.filter((id) => id !== req.params.id);
-    await user.save();
-    const response = {
-      status: true,
-    };
-    res.status(200).json(response);
+  try {
+    const user = await userModel.findOne({
+      _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
+    });
+    if (user.requests.includes(req.params.id)) {
+      user.requests = user.requests.filter((id) => id !== req.params.id);
+      await user.save();
+      const response = {
+        status: true,
+      };
+      res.status(200).json(response);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
 export const userProfile = async (req, res) => {
-  const response = {};
-  const currentUserId = jwt.verify(
-    req.params.token,
-    process.env.TOKEN_SECRET
-  ).userId;
-  const isContact = await userModel.find({
-    $and: [
-      { _id: req.params.id },
-      { contacts: { $elemMatch: { $eq: currentUserId } } },
-    ],
-  });
-  if (isContact.length === 0) {
-    response.contact = false;
-    const isRequested = await userModel.find({
+  try {
+    const response = {};
+    const currentUserId = jwt.verify(
+      req.params.token,
+      process.env.TOKEN_SECRET
+    ).userId;
+    const isContact = await userModel.find({
       $and: [
         { _id: req.params.id },
-        { requests: { $elemMatch: { $eq: currentUserId } } },
+        { contacts: { $elemMatch: { $eq: currentUserId } } },
       ],
     });
-    if (isRequested.length !== 0) {
-      response.request = true;
+    if (isContact.length === 0) {
+      response.contact = false;
+      const isRequested = await userModel.find({
+        $and: [
+          { _id: req.params.id },
+          { requests: { $elemMatch: { $eq: currentUserId } } },
+        ],
+      });
+      if (isRequested.length !== 0) {
+        response.request = true;
+      } else {
+        response.request = false;
+      }
     } else {
-      response.request = false;
+      response.contact = true;
     }
-  } else {
-    response.contact = true;
-  }
-  response.data = await userModel.find({ _id: req.params.id });
+    response.data = await userModel.find({ _id: req.params.id });
 
-  // Check if viewed profile is same as user
-  const user = await userModel.findOne({ _id: currentUserId });
-  if (user._id.toString() === req.params.id) {
-    res.status(206).json(response);
-  } else {
-    res.status(200).json(response);
+    // Check if viewed profile is same as user
+    const user = await userModel.findOne({ _id: currentUserId });
+    if (user._id.toString() === req.params.id) {
+      res.status(206).json(response);
+    } else {
+      res.status(200).json(response);
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
 
 export const getConnection = async (req, res) => {
-  const user = await userModel.findOne({
-    _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
-  });
-  const contacts = [];
-  for (let i = 0; i < user.contacts.length; i++) {
-    const userQuery = userModel.findOne({ _id: user.contacts[i] });
-    const contact = await userQuery.exec();
-    contacts.push(contact);
-  }
   try {
+    const user = await userModel.findOne({
+      _id: jwt.verify(req.body.token, process.env.TOKEN_SECRET).userId,
+    });
+    const contacts = [];
+    for (let i = 0; i < user.contacts.length; i++) {
+      const userQuery = userModel.findOne({ _id: user.contacts[i] });
+      const contact = await userQuery.exec();
+      contacts.push(contact);
+    }
     const response = {
       data: contacts,
     };
@@ -189,36 +208,43 @@ export const getConnection = async (req, res) => {
 };
 
 export const removeConnection = async (req, res) => {
-  const user = await userModel.findOne({
-    _id: jwt.verify(req.params.token, process.env.TOKEN_SECRET).userId,
-  });
-  await userModel.findOneAndUpdate(
-    { _id: user },
-    { $pull: { contacts: req.params.id } }
-  );
-  const response = {
-    status: true,
-  };
-  res.status(200).json(response);
+  try {
+    const user = await userModel.findOne({
+      _id: jwt.verify(req.params.token, process.env.TOKEN_SECRET).userId,
+    });
+    await userModel.findOneAndUpdate(
+      { _id: user },
+      { $pull: { contacts: req.params.id } }
+    );
+    const response = {
+      status: true,
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 export const otherProfile = async (req, res) => {
-  console.log(req.params.id);
-  const response = {
-    data: await userModel.findOne({ _id: req.params.id }),
-  };
-  res.status(200).json(response);
+  try {
+    const response = {
+      data: await userModel.findOne({ _id: req.params.id }),
+    };
+    res.status(200).json(response);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 export const otherConnection = async (req, res) => {
-  const user = await userModel.findOne({ _id: req.params.id });
-  const contacts = [];
-  for (let i = 0; i < user.contacts.length; i++) {
-    const userQuery = userModel.findOne({ _id: user.contacts[i] });
-    const contact = await userQuery.exec();
-    contacts.push(contact);
-  }
   try {
+    const user = await userModel.findOne({ _id: req.params.id });
+    const contacts = [];
+    for (let i = 0; i < user.contacts.length; i++) {
+      const userQuery = userModel.findOne({ _id: user.contacts[i] });
+      const contact = await userQuery.exec();
+      contacts.push(contact);
+    }
     const response = {
       data: contacts,
     };
